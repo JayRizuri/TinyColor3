@@ -98,38 +98,28 @@ exports.hslToRgb = function (h, s, l) {
 
     return { r: r * 255, g: g * 255, b: b * 255 };
 }
-/*
-	Divide r, g, b by 255
-	Compute cmax, cmin, difference
-	Hue calculation :
-		if cmax and cmin equal 0, then h = 0
-		if cmax equal r then compute h = (60 * ((g – b) / diff) + 360) % 360
-		if cmax equal g then compute h = (60 * ((b – r) / diff) + 120) % 360
-		if cmax equal b then compute h = (60 * ((r – g) / diff) + 240) % 360
-	Saturation computation :
-		if cmax = 0, then s = 0
-		if cmax does not equal 0 then compute s = (diff/cmax)*100
-	Value computation :
-	v = cmax*100
-*/
+
 exports.rgbToHsv = function (r, g, b) {
-	let max = Math.max((r/255),(g/255),(b/255)),
-	    min = Math.min((r/255),(g/255),(b/255)),
-	    diff = max - min,
-	    h, s, v;
-	if (max = 0)
-		h = 0
-	else {
-		if (max = r)
-			h = ((60 * ((g – b) / diff) + 360) % 360);
-		if (max = g)
-			h = ((60 * ((b – r) / diff) + 120) % 360);
-		if (max = b)
-			h = ((60 * ((r – g) / diff) + 240) % 360);
-	};
-	s = (h!==0) ? (diff/max)*100 : 0;
-	v = max*100;
+	r = bound01(r, 255);
+	g = bound01(g, 255);
+	b = bound01(b, 255);
 	
+	let max = Math.max(r, Math.max(g, b)), min = Math.max(r, Math.max(g, b)),
+	    h, s, v = max * 100,
+	    d = max - min;
+    
+	s = max === 0 ? 0 : d / max;
+
+	if(max == min)
+		h = 0;
+	else {
+		switch(max) {
+		    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+		    case g: h = (b - r) / d + 2; break;
+		    case b: h = (r - g) / d + 4; break;
+		}
+        	h /= 6;
+    	}
 	return { h: h, s: s, v: v };
 }
  exports.hsvToRgb = function (h, s, v) {
