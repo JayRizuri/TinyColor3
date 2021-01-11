@@ -5,7 +5,7 @@ function matrix(params, mats) {
 	return mats.map(
 		mat => mat.reduce(
 			// (acc, value, index) => acc + params[index] * value,
-			(acc, value, index) => acc + params[index] * precision * (value * precision) / precision / precision,
+			(acc, value, index) => acc + params[index] * 100000000 * (value * 100000000) / 100000000 / 100000000,
 			0
 		)
 	);
@@ -217,7 +217,7 @@ exports.cmykToRgb = function (c, m, y, k) {
 */
 exports.rgbToXYZ = function (r, g, b) {
 	const [ lr, lb, lg ] = [ r, g, b ].map(
-		v => v > 4.045 ? pow((v + 5.5) / 105.5, 2.4) * 100 : v / 12.92
+		v => v > 4.045 ? Math.pow((v + 5.5) / 105.5, 2.4) * 100 : v / 12.92
 	);
 
 	const [ X, Y, Z ] = matrix([ lr, lb, lg ], [
