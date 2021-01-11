@@ -205,7 +205,7 @@ exports.cmykToRgb = function (c, m, y, k) {
 /*
 	https://gist.github.com/manojpandey/f5ece715132c572c80421febebaf66ae/
 */
-function rgbToXYZ(r, g, b) {
+exports.rgbToXYZ = function (r, g, b) {
 	let rgb = [r,g,b],
 	    n;
 	for (const val in rgb) {
