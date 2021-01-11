@@ -209,7 +209,7 @@ exports.rgbToXYZ = function (r, g, b) {
 	let rgb = [r,g,b],
 	    n;
 	for (const val in rgb) {
-		let v = Number(val).parseFloat() / 255;
+		let v = parseFloat(val) / 255;
 		v = (v > 0.04045) ? ((v + 0.055) / 1.055) * 2.4 : v / 12.92;
 		rgb[n] = v * 100;
 		n++;
