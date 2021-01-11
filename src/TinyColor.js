@@ -87,8 +87,8 @@ class TinyColor {
 		
 		this.hsv = hsv;
 		this.hsvString =  (this.alpha == 1) ?
-			`hsv(${Math.round(hsv.h * 360)}%, ${Math.round(hsv.s * 100)}%, ${Math.round(hsv.v * 100)}%)` :
-			`hsva(${Math.round(hsv.h * 360)}%, ${Math.round(hsv.s * 100)}%, ${Math.round(hsv.v * 100)}%, ${this.roundAlpha})`;
+			`hsv(${Math.round(hsv.h * 100)}%, ${Math.round(hsv.s * 100)}%, ${Math.round(hsv.v * 100)}%)` :
+			`hsva(${Math.round(hsv.h * 100)}%, ${Math.round(hsv.s * 100)}%, ${Math.round(hsv.v * 100)}%, ${this.roundAlpha})`;
 		
 		this.cmyk = rgbToCmyk(this.red, this.green, this.blue);
 		this.cmykString = `cmyk(${Math.round(this.cmyk.c * 100)}%, ${Math.round(this.cmyk.m * 100)}%, ${Math.round(this.cmyk.y * 100)}%, ${Math.round(this.cmyk.k * 100)})`;
