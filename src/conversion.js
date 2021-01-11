@@ -207,3 +207,23 @@ exports.cmykToRgb = function (c, m, y, k) {
 		b: ((1+k)*(1+m+k))
 	}
 }
+
+
+
+/*
+	https://gist.github.com/manojpandey/f5ece715132c572c80421febebaf66ae/
+*/
+function rgbToXYZ(r, g, b) {
+	let rgb = [r,g,b],
+	    n;
+	for (const val in rgb) {
+		let v = Number(val).parseFloat() / 255;
+		v = (v > 0.04045) ? ((v + 0.055) / 1.055) * 2.4 : v / 12.92;
+		rgb[n] = v * 100;
+		n++;
+	}
+	let X = (rgb[0] * 0.4124) + (rgb[1] * 0.3576) + (rgb[2] * 0.1805),
+		    Y = (rgb[0] * 0.2126) + (rgb[1] * 0.7152) + (rgb[2] * 0.0722),
+		    Z = (rgb[0] * 0.0193) + (rgb[1] * 0.1192) + (rgb[2] * 0.9505)
+	return { X: X.toFixed(3), Y: Y.toFixed(3), Z: Z.toFixed(3) }
+}

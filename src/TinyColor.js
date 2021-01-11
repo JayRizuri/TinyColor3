@@ -1,4 +1,4 @@
-const { rgbToRgb, rgbToHsl, hslToRgb, rgbToHsv, hsvToRgb, rgbToHex, rgbaToHex, rgbaToArgbHex, rgbToCmyk, bound01 } = require("./conversion"),
+const { rgbToRgb, rgbToHsl, hslToRgb, rgbToHsv, hsvToRgb, rgbToHex, rgbaToHex, rgbaToArgbHex, rgbToCmyk, rgbToXYZ, bound01 } = require("./conversion"),
 	colorNames = require("./colorNames"),
 	trimLeft = /^\s+/,
 	trimRight = /\s+$/,
@@ -92,6 +92,9 @@ class TinyColor {
 		
 		this.cmyk = rgbToCmyk(this.red, this.green, this.blue);
 		this.cmykString = `cmyk(${Math.round(this.cmyk.c * 100)}%, ${Math.round(this.cmyk.m * 100)}%, ${Math.round(this.cmyk.y * 100)}%, ${Math.round(this.cmyk.k * 100)})`;
+		
+		this.xyz = rgbToXYZ(this.red, this.green, this.blue);
+		this.xyzString = `xyz(${Math.round(this.xyz.X * 100)}, ${Math.round(this.xyz.Y * 100)}, ${Math.round(this.xyz.Z)})`;
 	}
 	_applyModification (fn, args) {
 		let color = fn.apply(null, [this].concat([].slice.call(args)));
