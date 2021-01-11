@@ -109,7 +109,7 @@ exports.hslToRgb = function (h, s, l) {
     return { r: r * 255, g: g * 255, b: b * 255 };
 }
 
-function rgbToHsv(r, g, b) {
+exports.rgbToHsv = function (r, g, b) {
   r /= 255, g /= 255, b /= 255;
 
   let max = Math.max(r, g, b), min = Math.min(r, g, b),
