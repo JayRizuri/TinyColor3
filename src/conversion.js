@@ -46,7 +46,7 @@ exports.rgbToRgb = function (r, g, b) {
 	};
 };
 
-exports.rgbToHsl = function (r, g, b) {
+function rgbToHsl(r, g, b) {
 	r = bound01(r, 255);
 	g = bound01(g, 255);
 	b = bound01(b, 255);
@@ -74,6 +74,7 @@ exports.rgbToHsl = function (r, g, b) {
 	return { h: h, s: s, l: l };
 }
 
+exports.rgbToHsl = rgbToHsl;
 exports.hslToRgb = function (h, s, l) {
     let r, g, b;
 
@@ -108,28 +109,28 @@ exports.hslToRgb = function (h, s, l) {
     return { r: r * 255, g: g * 255, b: b * 255 };
 }
 
-exports.rgbToHsv = function (r, g, b) {
-	r = bound01(r, 255);
-	g = bound01(g, 255);
-	b = bound01(b, 255);
-	
-	let max = Math.max(r, Math.max(g, b)), min = Math.max(r, Math.max(g, b)),
-	    h, s, v = max * 100,
-	    d = max - min;
-    
-	s = max === 0 ? 0 : d / max;
+function rgbToHsv(r, g, b) {
+  r /= 255, g /= 255, b /= 255;
 
-	if(max == min)
-		h = 0;
-	else {
-		switch(max) {
-		    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-		    case g: h = (b - r) / d + 2; break;
-		    case b: h = (r - g) / d + 4; break;
-		}
-        	h /= 6;
-    	}
-	return { h: h, s: s, v: v };
+  let max = Math.max(r, g, b), min = Math.min(r, g, b),
+     h, s, v = max;
+
+  let d = max - min;
+  s = max == 0 ? 0 : d / max;
+
+  if (max == min)
+    h = 0; // achromatic
+  else {
+    switch (max) {
+      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+      case g: h = (b - r) / d + 2; break;
+      case b: h = (r - g) / d + 4; break;
+    }
+
+    h /= 6;
+  }
+
+  return { h:rgbToHsl(r, g, b).h, s:s, v:v };
 }
  exports.hsvToRgb = function (h, s, v) {
 
