@@ -125,7 +125,7 @@ exports.rgbToHsv = function (r, g, b) {
 		}
 		h /= 6;
 	}
-	return { h: h, s: s, V: v };
+	return { h: h, s: s, v: v };
 }
  exports.hsvToRgb = function (h, s, v) {
 
