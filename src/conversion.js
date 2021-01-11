@@ -104,8 +104,10 @@ exports.rgbToHsv = function (r, g, b) {
 	g = bound01(g, 255);
 	b = bound01(b, 255);
 	
-	let max = mathMax(r, g, b), min = mathMin(r, g, b),
-	    h, s, v = max,
+	let max = Math.max(r, g, b), min = Math.min(r, g, b),
+	    h, 
+	    s,
+	    v = max,
 	    d = max - min;
     
 	s = max === 0 ? 0 : d / max;
