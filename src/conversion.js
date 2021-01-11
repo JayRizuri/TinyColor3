@@ -103,7 +103,8 @@ exports.rgbToHsv = function (r, g, b) {
 	r = bound01(r, 255);
 	g = bound01(g, 255);
 	b = bound01(b, 255);
-	let max = Math.max(r, g, b), min = Math.min(r, g, b),
+	let max = Math.max(r, g, b),
+	    min = Math.min(r, g, b),
 	    h,
 	    d = max - min,
 	    s = max === 0 ? 0 : d / max,
@@ -124,7 +125,7 @@ exports.rgbToHsv = function (r, g, b) {
 		}
 		h /= 6;
 	}
-	return { h: h, s: s, v: v };
+	return { h: h, s: s, V: v };
 }
  exports.hsvToRgb = function (h, s, v) {
 
