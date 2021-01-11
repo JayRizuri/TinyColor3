@@ -1,6 +1,15 @@
 function isOnePointZero(n) {
     return typeof n == "string" && n.indexOf('.') != -1 && parseFloat(n) === 1;
 }
+function matrix(params, mats) {
+	return mats.map(
+		mat => mat.reduce(
+			// (acc, value, index) => acc + params[index] * value,
+			(acc, value, index) => acc + params[index] * precision * (value * precision) / precision / precision,
+			0
+		)
+	);
+}
 function pad2(c) {
 	return c.length == 1 ? '0' + c : '' + c;
 }
@@ -206,16 +215,15 @@ exports.cmykToRgb = function (c, m, y, k) {
 	https://gist.github.com/manojpandey/f5ece715132c572c80421febebaf66ae/
 */
 exports.rgbToXYZ = function (r, g, b) {
-	let rgb = [r,g,b],
-	    n;
-	for (const val in rgb) {
-		let v = parseFloat(val) / 255;
-		v = (v > 0.04045) ? ((v + 0.055) / 1.055) * 2.4 : v / 12.92;
-		rgb[n] = v * 100;
-		n++;
-	}
-	let X = (rgb[0] * 0.4124) + (rgb[1] * 0.3576) + (rgb[2] * 0.1805),
-		    Y = (rgb[0] * 0.2126) + (rgb[1] * 0.7152) + (rgb[2] * 0.0722),
-		    Z = (rgb[0] * 0.0193) + (rgb[1] * 0.1192) + (rgb[2] * 0.9505)
-	return { X: X.toFixed(3), Y: Y.toFixed(3), Z: Z.toFixed(3) }
+	const [ lr, lb, lg ] = [ r, g, b ].map(
+		v => v > 4.045 ? pow((v + 5.5) / 105.5, 2.4) * 100 : v / 12.92
+	);
+
+	const [ X, Y, Z ] = matrix([ lr, lb, lg ], [
+		[0.4124564, 0.3575761, 0.1804375],
+		[0.2126729, 0.7151522, 0.0721750],
+		[0.0193339, 0.1191920, 0.9503041]
+	]);
+
+	return { X: X, Y: Y, Z: Z };
 }
