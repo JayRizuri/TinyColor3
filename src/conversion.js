@@ -103,28 +103,23 @@ exports.rgbToHsv = function (r, g, b) {
 	r = bound01(r, 255);
 	g = bound01(g, 255);
 	b = bound01(b, 255);
-	let max = Math.max(r, g, b),
-	    min = Math.min(r, g, b),
-	    h,
-	    d = max - min,
-	    s = max === 0 ? 0 : d / max,
-	    v = max;
+	
+	let max = mathMax(r, g, b), min = mathMin(r, g, b),
+	    h, s, v = max,
+	    d = max - min;
+    
+	s = max === 0 ? 0 : d / max;
+
 	if(max == min)
-		h = 0; // achromatic
+		h = 0;
 	else {
 		switch(max) {
-			case r:
-				h = (g - b) / d + (g < b ? 6 : 0);
-				break;
-			case g:
-				h = (b - r) / d + 2;
-				break;
-			case b:
-				h = (r - g) / d + 4;
-				break;
+		    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+		    case g: h = (b - r) / d + 2; break;
+		    case b: h = (r - g) / d + 4; break;
 		}
-		h /= 6;
-	}
+        	h /= 6;
+    	}
 	return { h: h, s: s, v: v };
 }
  exports.hsvToRgb = function (h, s, v) {
