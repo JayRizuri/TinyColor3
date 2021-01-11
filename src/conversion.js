@@ -118,13 +118,15 @@ exports.rgbToHsv = function (r, g, b) {
 	    diff = max - min,
 	    h, s, v;
 	if (max = 0)
-		h = 0;
-	else if (max = r)
-		h = (60 * ((g – b) / diff) + 360) % 360;
-	else if (max = g)
-		h = (60 * ((b – r) / diff) + 120) % 360;
-	else if (max = b)
-		h = (60 * ((r – g) / diff) + 240) % 360;
+		h = 0
+	else {
+		if (max = r)
+			h = ((60 * ((g – b) / diff) + 360) % 360);
+		if (max = g)
+			h = ((60 * ((b – r) / diff) + 120) % 360);
+		if (max = b)
+			h = ((60 * ((r – g) / diff) + 240) % 360);
+	};
 	s = (h!==0) ? (diff/max)*100 : 0;
 	v = max*100;
 	
