@@ -225,5 +225,5 @@ function rgbToXYZ(r, g, b) {
 	let X = (rgb[0] * 0.4124) + (rgb[1] * 0.3576) + (rgb[2] * 0.1805),
 		    Y = (rgb[0] * 0.2126) + (rgb[1] * 0.7152) + (rgb[2] * 0.0722),
 		    Z = (rgb[0] * 0.0193) + (rgb[1] * 0.1192) + (rgb[2] * 0.9505)
-	return { X: X.toFixed(4), Y: Y.toFixed(4), Z: Z.toFixed(4) }
+	return { X: X.toFixed(3), Y: Y.toFixed(3), Z: Z.toFixed(3) }
 }
