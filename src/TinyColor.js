@@ -336,6 +336,48 @@ class TinyColor {
 function isValidCSSUnit(color) {
 	return !!matchers.CSS_UNIT.exec(color);
 }
+function validateWCAG2Parms(parms) {
+	parms = parms || {
+		level: "AA",
+		size: "small"
+	};
+	let level = (parms.level || "AA").toUpperCase(),
+		size = (parms.size || "small").toLowerCase();
+	if (level !== "AA" && level !== "AAA") level = "AA";
+	if (size !== "small" && size !== "large") size = "small";
+	return {
+		level: level,
+		size: size
+	};
+}
+function readability(color1, color2) {
+	let c1 = new TinyColor(color1),
+		c2 = new TinyColor(color2);
+	return (
+		(Math.max(c1.getLuminance(), c2.getLuminance()) + 0.05) /
+		(Math.min(c1.getLuminance(), c2.getLuminance()) + 0.05)
+	);
+}
+
+function isReadable(color1, color2, wcag2) {
+	let r = readability(color1, color2),
+		out = false,
+		wcag2Parms = validateWCAG2Parms(wcag2);
+	switch (wcag2Parms.level + wcag2Parms.size) {
+		default:
+		case "AAsmall":
+		case "AAAlarge":
+			out = r >= 4.5;
+			break;
+		case "AAlarge":
+			out = r >= 3;
+			break;
+		case "AAAsmall":
+			out = r >= 7;
+			break;
+	}
+	return out;
+}
 
 const matchers = (function () {
 	let CSS_INTEGER = "[-\\+]?\\d+%?",
@@ -491,7 +533,6 @@ function inputToRGB(color) {
 		format = false;
 
 	if (typeof color === "string") color = stringInputToObject(color);
-
 	if (typeof color === "object") {
 		if (
 			isValidCSSUnit(color.r) &&
