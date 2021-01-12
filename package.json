@@ -1,5 +1,5 @@
 {
-	"version": "2.0.2",
+	"version": "2.0.3",
 	"name": "tinycolor_v3",
 	"description": "Fast Color Parsing and Manipulation",
 	"url": "http://github.com/JayRizuri/TinyColor3",
@@ -9,5 +9,9 @@
 	"main": "./src/TinyColor.js",
 	"engines": {
 		"node": "*"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/JayRizuri/TinyColor3.git"
 	}
 }

@@ -7,7 +7,7 @@ const {
 		rgbXYZ,
 		hslRGB,
 		hsvRGB,
-		utils,
+		bound01,
 		cmykRGB
 	} = require("./conversion"),
 	colorNames = require("./colorNames"),
@@ -88,50 +88,26 @@ class TinyColor {
 				  })`;
 
 		this.PercentageRgb = {
-			r: `${Math.round(
-				utils("bound01", [this.red, 255]) * 255
-			)}%`,
-			g: `${Math.round(
-				utils("bound01", [this.green, 255]) * 255
-			)}%`,
-			b: `${Math.round(
-				utils("bound01", [this.blue, 255]) * 255
-			)}%`,
+			r: `${Math.round(bound01(this.red, 255) * 255)}%`,
+			g: `${Math.round(bound01(this.green, 255) * 255)}%`,
+			b: `${Math.round(bound01(this.blue, 255) * 255)}%`,
 			a: this.alpha
 		};
 		this.PercentageRgbString =
 			this.alpha === 1
 				? `rgb(${Math.round(
-						utils("bound01", [
-							this.red,
-							255
-						]) * 255
+						bound01(this.red, 255) * 255
 				  )}%, ${Math.round(
-						utils("bound01", [
-							this.green,
-							255
-						]) * 255
+						bound01(this.green, 255) * 255
 				  )}%, ${Math.round(
-						utils("bound01", [
-							this.blue,
-							255
-						]) * 255
+						bound01(this.blue, 255) * 255
 				  )}%)`
 				: `rgba(${Math.round(
-						utils("bound01", [
-							this.red,
-							255
-						]) * 255
+						bound01(this.red, 255) * 255
 				  )}%, ${Math.round(
-						utils("bound01", [
-							this.green,
-							255
-						]) * 255
+						bound01(this.green, 255) * 255
 				  )}%, ${Math.round(
-						utils("bound01", [
-							this.blue,
-							255
-						]) * 255
+						bound01(this.blue, 255) * 255
 				  )}%, ${this.roundAlpha})`;
 
 		this.hsl = {
