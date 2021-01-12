@@ -77,7 +77,7 @@ function rgbToHsl(r, g, b) {
 exports.rgbToHsl = rgbToHsl;
 exports.hslToRgb = function (h, s, l) {
     let r, g, b;
-
+	
     h = bound01(h, 360);
     s = bound01(s, 100);
     l = bound01(l, 100);
@@ -115,22 +115,28 @@ exports.rgbToHsv = function (r, g, b) {
 		b1 = b / 255,
 	    max = Math.max(r1, g1, b1),
 	    min = Math.min(r1, g1, b1),
-	    h,
-	    s,
+	    h, s, s1,
+	    l = (max + min) / 2,
 	    v = max,
-	    d = max - min;
 	s = max == 0 ? 0 : d / max;
-	if (max == min)
-		h = 0; // achromatic
+	if(max == min)
+		h = s1 = 0;
 	else {
-		switch (max) {
-			case r: h = (g1 - b1) / d + (g1 < b1 ? 6 : 0); break;
-			case g: h = (b1 - r1) / d + 2; break;
-			case b: h = (r1 - g1) / d + 4; break;
+		let d = max - min;
+		s1 = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+		switch(max) {
+			case r: 
+				h = (g - b) / d + (g < b ? 6 : 0); 
+				break;
+			case g: 
+				h = (b - r) / d + 2; 
+				break;
+			case b:
+				h = (r - g) / d + 4; 
+				break;
 		}
-		h = h / 6;
+		h /= 6;
 	}
-	console.log(h)
 	return { h:rgbToHsl(r, g, b).h, s:s, v:v };
 }
  exports.hsvToRgb = function (h, s, v) {
