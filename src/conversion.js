@@ -137,7 +137,7 @@ function rgbHSV(r, g, b) {
 		d = max - min;
 	s = max === 0 ? 0 : d / max;
 
-	return { h: hslRGB(r, g, b).h, s: s, v: v };
+	return { h: rgbHSL(r, g, b).h, s: s, v: v };
 }
 function hsvRGB(h, s, v) {
 	h = utils("bound01", [h, 360]) * 6;
