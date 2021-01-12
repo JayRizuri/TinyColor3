@@ -1,78 +1,59 @@
-function utils(type, variables = []) {
-	switch (type) {
-		case "bound01":
-			if (
-				typeof variables[0] === "string" &&
-				variables[0].indexOf(".") !== -1 &&
-				parseFloat(variables[0]) === 1
-			) {
-				variables[0] = "100%";
-			}
-			let processPercent =
-				typeof variables[0] === "string" &&
-				variables[0].indexOf("%") !== -1;
-			variables[0] = Math.min(
-				variables[1],
-				Math.max(0, parseFloat(variables[0]))
-			);
-			if (processPercent)
-				variables[0] =
-					parseInt(
-						variables[0] * variables[1],
-						10
-					) / 100;
-			if (Math.abs(variables[0] - variables[1]) < 0.000001)
-				return 1;
-			return (
-				(variables[0] % variables[1]) /
-				parseFloat(variables[1])
-			);
-		case "decimalHex":
-			return Math.round(
-				parseFloat(variables[0]) * 255
-			).toString(16);
-		case "isPercent":
-			return (
-				typeof variables[0] === "string" &&
-				variables[0].indexOf("%") !== -1
-			);
-		case "pad2":
-			return variables[0].length === 1
-				? "0" + variables[0]
-				: "" + variables[0];
-		case "matrix":
-			return variables[0].map((mat) =>
-				mat.reduce(
-					// (acc, value, index) => acc + params[index] * value,
-					(acc, value, index) =>
-						acc +
-						(variables[1][index] *
-							100000000 *
-							(value * 100000000)) /
-							100000000 /
-							100000000,
-					0
-				)
-			);
-		default:
-	}
+function isOnePointZero(n) {
+	return (
+		typeof n === "string" &&
+		n.indexOf(".") !== -1 &&
+		parseFloat(n) === 1
+	);
 }
+function matrix(params, mats) {
+	return mats.map((mat) =>
+		mat.reduce(
+			// (acc, value, index) => acc + params[index] * value,
+			(acc, value, index) =>
+				acc +
+				(params[index] *
+					100000000 *
+					(value * 100000000)) /
+					100000000 /
+					100000000,
+			0
+		)
+	);
+}
+function pad2(c) {
+	return c.length === 1 ? "0" + c : "" + c;
+}
+function isPercentage(n) {
+	return typeof n === "string" && n.indexOf("%") !== -1;
+}
+function convertDecimalToHex(d) {
+	return Math.round(parseFloat(d) * 255).toString(16);
+}
+function bound01(n, max) {
+	if (isOnePointZero(n)) n = "100%";
+	let processPercent = isPercentage(n);
+	n = Math.min(max, Math.max(0, parseFloat(n)));
+	if (processPercent) n = parseInt(n * max, 10) / 100;
+	if (Math.abs(n - max) < 0.000001) return 1;
+	return (n % max) / parseFloat(max);
+}
+exports.bound01 = bound01;
 /*
 --- Conversion Functions ---
 */
 
 function rgbRGB(r, g, b) {
 	return {
-		r: utils("bound01", [(r, 255)]) * 255,
-		g: utils("bound01", [(g, 255)]) * 255,
-		b: utils("bound01", [(b, 255)]) * 255
+		r: bound01(r, 255) * 255,
+		g: bound01(g, 255) * 255,
+		b: bound01(b, 255) * 255
 	};
 }
 
 function rgbHSL(r, g, b) {
-	r = utils("bound01", [(r, 255)]);
-	g = utils("bound01", [(g, 255)]);
-	b = utils("bound01", [(b, 255)]);
+	r = bound01(r, 255);
+	g = bound01(g, 255);
+	b = bound01(b, 255);
 	let max = Math.max(r, g, b),
 		min = Math.min(r, g, b),
 		h,
@@ -101,9 +82,9 @@ function rgbHSL(r, g, b) {
 function hslRGB(h, s, l) {
 	let r, g, b;
 
-	h = utils("bound01", [(h, 360)]);
-	s = utils("bound01", [(s, 100)]);
-	l = utils("bound01", [(l, 100)]);
+	h = bound01(h, 360);
+	s = bound01(s, 100);
+	l = bound01(l, 100);
 
 	function hue2rgb(p, q, t) {
 		if (t < 0) t += 1;
@@ -140,9 +121,9 @@ function rgbHSV(r, g, b) {
 	return { h: rgbHSL(r, g, b).h, s: s, v: v };
 }
 function hsvRGB(h, s, v) {
-	h = utils("bound01", [h, 360]) * 6;
-	s = utils("bound01", [s, 100]);
-	v = utils("bound01", [v, 100]);
+	h = bound01(h, 360) * 6;
+	s = bound01(s, 100);
+	v = bound01(v, 100);
 
 	let i = Math.floor(h),
 		f = h - i,
@@ -158,9 +139,9 @@ function hsvRGB(h, s, v) {
 }
 function rgbHEX(r, g, b, allow3Char) {
 	let hex = [
-		utils("pad2", [Math.round(r).toString(16)]),
-		utils("pad2", [Math.round(g).toString(16)]),
-		utils("pad2", [Math.round(b).toString(16)])
+		pad2(Math.round(r).toString(16)),
+		pad2(Math.round(g).toString(16)),
+		pad2(Math.round(b).toString(16))
 	];
 	if (
 		allow3Char &&
@@ -174,10 +155,10 @@ function rgbHEX(r, g, b, allow3Char) {
 }
 function rgbaHEX(r, g, b, a, allow4Char) {
 	let hex = [
-		utils("pad2", [Math.round(r).toString(16)]),
-		utils("pad2", [Math.round(g).toString(16)]),
-		utils("pad2", [Math.round(b).toString(16)]),
-		utils("pad2", [utils("decimalHex", [a])])
+		pad2(Math.round(r).toString(16)),
+		pad2(Math.round(g).toString(16)),
+		pad2(Math.round(b).toString(16)),
+		pad2(convertDecimalToHex(a))
 	];
 	if (
 		allow4Char &&
@@ -196,10 +177,10 @@ function rgbaHEX(r, g, b, a, allow4Char) {
 }
 function rgbaAHEX(r, g, b, a) {
 	let hex = [
-		utils("pad2", [utils("decimalHex", [a])]),
-		utils("pad2", [Math.round(r).toString(16)]),
-		utils("pad2", [Math.round(g).toString(16)]),
-		utils("pad2", [Math.round(b).toString(16)])
+		pad2(convertDecimalToHex(a)),
+		pad2(Math.round(r).toString(16)),
+		pad2(Math.round(g).toString(16)),
+		pad2(Math.round(b).toString(16))
 	];
 	return hex.join("");
 }
@@ -231,15 +212,11 @@ function rgbXYZ(r, g, b) {
 		v > 4.045 ? Math.pow((v + 5.5) / 105.5, 2.4) * 100 : v / 12.92
 	);
 
-	const [X, Y, Z] = utils(
-		"matrix",
-		[lr, lb, lg],
-		[
-			[0.4124564, 0.3575761, 0.1804375],
-			[0.2126729, 0.7151522, 0.072175],
-			[0.0193339, 0.119192, 0.9503041]
-		]
-	);
+	const [X, Y, Z] = matrix(lr, lb, lg, [
+		[0.4124564, 0.3575761, 0.1804375],
+		[0.2126729, 0.7151522, 0.072175],
+		[0.0193339, 0.119192, 0.9503041]
+	]);
 
 	return { X: X, Y: Y, Z: Z };
 }
@@ -255,6 +232,6 @@ module.exports = {
 	rgbaAHEX,
 	hslRGB,
 	hsvRGB,
-	utils,
-	cmykRGB
+	cmykRGB,
+	bound01
 };
