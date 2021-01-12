@@ -5,21 +5,6 @@ function isOnePointZero(n) {
 		parseFloat(n) === 1
 	);
 }
-function matrix(params, mats) {
-	return mats.map((mat) =>
-		mat.reduce(
-			// (acc, value, index) => acc + params[index] * value,
-			(acc, value, index) =>
-				acc +
-				(params[index] *
-					100000000 *
-					(value * 100000000)) /
-					100000000 /
-					100000000,
-			0
-		)
-	);
-}
 function pad2(c) {
 	return c.length === 1 ? "0" + c : "" + c;
 }
@@ -204,30 +189,12 @@ function cmykRGB(c, m, y, k) {
 	};
 }
 
-/*
-https://gist.github.com/manojpandey/f5ece715132c572c80421febebaf66ae/
-*/
-function rgbXYZ(r, g, b) {
-	const [lr, lb, lg] = [r, g, b].map((v) =>
-		v > 4.045 ? Math.pow((v + 5.5) / 105.5, 2.4) * 100 : v / 12.92
-	);
-
-	const [X, Y, Z] = matrix(lr, lb, lg, [
-		[0.4124564, 0.3575761, 0.1804375],
-		[0.2126729, 0.7151522, 0.072175],
-		[0.0193339, 0.119192, 0.9503041]
-	]);
-
-	return { X: X, Y: Y, Z: Z };
-}
-
 module.exports = {
 	rgbCMYK,
 	rgbHEX,
 	rgbHSL,
 	rgbHSV,
 	rgbRGB,
-	rgbXYZ,
 	rgbaHEX,
 	rgbaAHEX,
 	hslRGB,

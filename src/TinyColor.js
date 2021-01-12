@@ -4,7 +4,6 @@ const {
 		rgbHSL,
 		rgbHSV,
 		rgbRGB,
-		rgbXYZ,
 		hslRGB,
 		hsvRGB,
 		bound01,
@@ -149,13 +148,6 @@ class TinyColor {
 		)}%, ${Math.round(this.cmyk.m * 100)}%, ${Math.round(
 			this.cmyk.y * 100
 		)}%, ${Math.round(this.cmyk.k * 100)})`;
-
-		this.xyz = rgbXYZ(this.red, this.green, this.blue);
-		this.xyzString = `xyz(${Math.round(
-			this.xyz.X * 100
-		)}, ${Math.round(this.xyz.Y * 100)}, ${Math.round(
-			this.xyz.Z
-		)})`;
 	}
 	_applyModification(fn, args) {
 		let color = fn.apply(null, [this].concat([].slice.call(args)));
