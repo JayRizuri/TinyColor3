@@ -140,21 +140,17 @@ class TinyColor {
 						this.roundAlpha
 				  })`;
 
-		this.hsv = hsv;
+		this.hsv = { h: hsl.h, s: hsv.s, v: hsv.v };
 		this.hsvString =
 			this.alpha === 1
-				? `hsv(${Math.round(
-						hsv.h * 100
-				  )}%, ${Math.round(
+				? `hsv(${Math.round(hsl.h * 100)}, ${Math.round(
 						hsv.s * 100
 				  )}%, ${Math.round(hsv.v * 100)}%)`
 				: `hsva(${Math.round(
 						hsv.h * 100
-				  )}%, ${Math.round(
-						hsv.s * 100
-				  )}%, ${Math.round(hsv.v * 100)}%, ${
-						this.roundAlpha
-				  })`;
+				  )}, ${Math.round(hsv.s * 100)}%, ${Math.round(
+						hsv.v * 100
+				  )}%, ${this.roundAlpha})`;
 
 		this.cmyk = rgbToCmyk(this.red, this.green, this.blue);
 		this.cmykString = `cmyk(${Math.round(
@@ -164,11 +160,9 @@ class TinyColor {
 		)}%, ${Math.round(this.cmyk.k * 100)})`;
 
 		this.xyz = rgbToXYZ(this.red, this.green, this.blue);
-		this.xyzString = `xyz(${Math.round(
-			this.xyz.X * 100
-		)}, ${Math.round(this.xyz.Y * 100)}, ${Math.round(
-			this.xyz.Z
-		)})`;
+		this.xyzString = `xyz(${Math.round(this.xyz.X)}, ${Math.round(
+			this.xyz.Y
+		)}, ${Math.round(this.xyz.Z)})`;
 	}
 	_applyModification(fn, args) {
 		let color = fn.apply(null, [this].concat([].slice.call(args)));

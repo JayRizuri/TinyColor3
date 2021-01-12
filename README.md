@@ -1,8 +1,7 @@
 <h1 align="center">TinyColor3</h1>
 <p align="center">
 	<a href="https://www.npmjs.com/package/tinycolor_v3" title="NPM version"><img alt="NPM version" src="https://img.shields.io/npm/v/tinycolor_v3?logo=npm"/></a>
-	<a href="https://www.npmjs.com/package/tinycolor_v3" title="NPM downloads"><img alt="NPM downloads" src="https://img.shields.io/npm/dt/tinycolor_v3?logo=npm"/></a>
-	<a href="https://github.com/jayrizuri/TinyColor3/" title="License"><img alt="License" src="https://img.shields.io/appveyor/build/jayrizuri/TinyColor3.svg"/></a>
+	<a href="https://www.npmjs.com/package/tinycolor_v3" title="NPM downloads"><img alt="NPM downloads" src="https://img.shields.io/npm/dt/tinycolor_v3?logo=npm"/></a
 	<br>
 	<a href="https://github.com/jayrizuri/TinyColor3/blob/master/license" title="License"><img alt="License" src="https://img.shields.io/github/license/jayrizuri/TinyColor3?logo=github&logoColor=black"/></a>
 	<br>
