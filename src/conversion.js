@@ -5,21 +5,6 @@ function isOnePointZero(n) {
 		parseFloat(n) === 1
 	);
 }
-function matrix(params, mats) {
-	return mats.map((mat) =>
-		mat.reduce(
-			// (acc, value, index) => acc + params[index] * value,
-			(acc, value, index) =>
-				acc +
-				(params[index] *
-					100000000 *
-					(value * 100000000)) /
-					100000000 /
-					100000000,
-			0
-		)
-	);
-}
 function pad2(c) {
 	return c.length === 1 ? "0" + c : "" + c;
 }
@@ -207,21 +192,28 @@ exports.cmykToRgb = function (c, m, y, k) {
 };
 
 /*
-https://gist.github.com/manojpandey/f5ece715132c572c80421febebaf66ae/
+ - http://www.szintan.hu/boronkay/rgbtocie.xls
+ - Yes i had to convert a spreadsheet to a javascript function
+ - end me
 */
 exports.rgbToXYZ = function (r, g, b) {
-	const [lr, lb, lg] = [r, g, b].map((v) =>
-		v > 4.045 ? Math.pow((v + 5.5) / 105.5, 2.4) * 100 : v / 12.92
-	);
-
-	const [X, Y, Z] = matrix(
-		[lr, lb, lg],
-		[
-			[0.4124564, 0.3575761, 0.1804375],
-			[0.2126729, 0.7151522, 0.072175],
-			[0.0193339, 0.119192, 0.9503041]
-		]
-	);
-
+	let x =
+			r / 255 > 0.04045
+				? ((r / 255 + 0.055) / 1.055) ** 2.4
+				: r / 255 / 12.92,
+		y =
+			g / 255 > 0.04045
+				? ((g / 255 + 0.055) / 1.055) ** 2.4
+				: g / 255 / 12.92,
+		z =
+			b / 255 > 0.04045
+				? ((b / 255 + 0.055) / 1.055) ** 2.4
+				: b / 255 / 12.92,
+		X = x * 41.24 + y * 35.76 + z * 18.05,
+		Y = x * 21.26 + y * 71.52 + z * 7.22,
+		Z = x * 1.93 + y * 11.92 + z * 95.05;
 	return { X: X, Y: Y, Z: Z };
 };
+/*
+- How did this actually work wtf
+*/
