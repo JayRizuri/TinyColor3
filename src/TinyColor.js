@@ -1,13 +1,14 @@
 const {
-		rgbCMYK,
-		rgbHEX,
-		rgbHSL,
-		rgbHSV,
-		rgbRGB,
-		hslRGB,
-		hsvRGB,
-		bound01,
-		cmykRGB
+		rgbToRgb,
+		rgbToHsl,
+		hslToRgb,
+		rgbToHsv,
+		hsvToRgb,
+		rgbToHex,
+		cmykToRgb,
+		rgbToCmyk,
+		rgbToXYZ,
+		bound01
 	} = require("./conversion"),
 	colorNames = require("./colorNames"),
 	trimBoth = /(^\s+|\s+$)/;
@@ -38,8 +39,8 @@ class TinyColor {
 		this.blue = rgb.b;
 		this.alpha = rgb.a;
 
-		let hsl = rgbHSL(this.red, this.green, this.blue),
-			hsv = rgbHSV(this.red, this.green, this.blue);
+		let hsl = rgbToHsl(this.red, this.green, this.blue),
+			hsv = rgbToHsv(this.red, this.green, this.blue);
 
 		this.roundAlpha = Math.round(100 * this.alpha) / 100;
 		this.format = opts.format || rgb.format;
@@ -58,11 +59,20 @@ class TinyColor {
 		this.isDark = this.brightness < 128;
 		this.isLight = !this.isDark;
 
-		this.hex = rgbHEX(this.red, this.green, this.blue);
-		this.hexString = `#${rgbHEX(this.red, this.green, this.blue)}`;
+		this.hex = rgbToHex(this.red, this.green, this.blue);
+		this.hexString = `#${rgbToHex(
+			this.red,
+			this.green,
+			this.blue
+		)}`;
 
-		this.hex8 = rgbHEX(this.red, this.green, this.blue, this.alpha);
-		this.hex8String = `#${rgbHEX(
+		this.hex8 = rgbToHex(
+			this.red,
+			this.green,
+			this.blue,
+			this.alpha
+		);
+		this.hex8String = `#${rgbToHex(
 			this.red,
 			this.green,
 			this.blue,
@@ -117,7 +127,9 @@ class TinyColor {
 		};
 		this.hslString =
 			this.alpha === 1
-				? `hsl(${Math.round(hsl.h * 360)}, ${Math.round(
+				? `hsl(${Math.round(
+						hsl.h * 360
+				  )}%, ${Math.round(
 						hsl.s * 100
 				  )}%, ${Math.round(hsl.l * 100)}%)`
 				: `hsla(${Math.round(
@@ -131,7 +143,9 @@ class TinyColor {
 		this.hsv = hsv;
 		this.hsvString =
 			this.alpha === 1
-				? `hsv(${Math.round(hsv.h * 100)}, ${Math.round(
+				? `hsv(${Math.round(
+						hsv.h * 100
+				  )}%, ${Math.round(
 						hsv.s * 100
 				  )}%, ${Math.round(hsv.v * 100)}%)`
 				: `hsva(${Math.round(
@@ -142,12 +156,19 @@ class TinyColor {
 						this.roundAlpha
 				  })`;
 
-		this.cmyk = rgbCMYK(this.red, this.green, this.blue);
+		this.cmyk = rgbToCmyk(this.red, this.green, this.blue);
 		this.cmykString = `cmyk(${Math.round(
 			this.cmyk.c * 100
 		)}%, ${Math.round(this.cmyk.m * 100)}%, ${Math.round(
 			this.cmyk.y * 100
 		)}%, ${Math.round(this.cmyk.k * 100)})`;
+
+		this.xyz = rgbToXYZ(this.red, this.green, this.blue);
+		this.xyzString = `xyz(${Math.round(
+			this.xyz.X * 100
+		)}, ${Math.round(this.xyz.Y * 100)}, ${Math.round(
+			this.xyz.Z
+		)})`;
 	}
 	_applyModification(fn, args) {
 		let color = fn.apply(null, [this].concat([].slice.call(args)));
@@ -364,7 +385,6 @@ function isReadable(color1, color2, wcag2) {
 		out = false,
 		wcag2Parms = validateWCAG2Parms(wcag2);
 	switch (wcag2Parms.level + wcag2Parms.size) {
-		default:
 		case "AAsmall":
 		case "AAAlarge":
 			out = r >= 4.5;
@@ -378,6 +398,36 @@ function isReadable(color1, color2, wcag2) {
 	}
 	return out;
 }
+exports.mostReadable = function (baseColor, colorList, args) {
+	let bestColor = null,
+		bestScore = 0,
+		readability,
+		includeFallbackColors,
+		level,
+		size;
+	args = args || {};
+	includeFallbackColors = args.includeFallbackColors;
+	level = args.level;
+	size = args.size;
+
+	for (var i = 0; i < colorList.length; i++) {
+		readability = readability(baseColor, colorList[i]);
+		if (readability > bestScore) {
+			bestScore = readability;
+			bestColor = new TinyColor(colorList[i]);
+		}
+	}
+	if (
+		isReadable(baseColor, bestColor, {
+			level: level,
+			size: size
+		}) ||
+		!includeFallbackColors
+	)
+		return bestColor;
+	else args.includeFallbackColors = false;
+	return mostReadable(baseColor, ["#fff", "#000"], args);
+};
 
 const matchers = (function () {
 	let CSS_INTEGER = "[-\\+]?\\d+%?",
@@ -451,46 +501,46 @@ function stringInputToObject(color) {
 			a: 0,
 			format: "name"
 		};
-	if (match === matchers.rgb.exec(color))
+	if ((match = matchers.rgb.exec(color)))
 		return {
 			r: match[1],
 			g: match[2],
 			b: match[3]
 		};
-	if (match === matchers.rgba.exec(color))
+	if ((match = matchers.rgba.exec(color)))
 		return {
 			r: match[1],
 			g: match[2],
 			b: match[3],
 			a: match[4]
 		};
-	if (match === matchers.hsl.exec(color))
+	if ((match = matchers.hsl.exec(color)))
 		return {
 			h: match[1],
 			s: match[2],
 			l: match[3]
 		};
-	if (match === matchers.hsla.exec(color))
+	if ((match = matchers.hsla.exec(color)))
 		return {
 			h: match[1],
 			s: match[2],
 			l: match[3],
 			a: match[4]
 		};
-	if (match === matchers.hsv.exec(color))
+	if ((match = matchers.hsv.exec(color)))
 		return {
 			h: match[1],
 			s: match[2],
 			v: match[3]
 		};
-	if (match === matchers.hsva.exec(color))
+	if ((match = matchers.hsva.exec(color)))
 		return {
 			h: match[1],
 			s: match[2],
 			v: match[3],
 			a: match[4]
 		};
-	if (match === matchers.hex8.exec(color))
+	if ((match = matchers.hex8.exec(color)))
 		return {
 			r: parseIntFromHex(match[1]),
 			g: parseIntFromHex(match[2]),
@@ -498,14 +548,14 @@ function stringInputToObject(color) {
 			a: convertHexToDecimal(match[4]),
 			format: named ? "name" : "hex8"
 		};
-	if (match === matchers.hex6.exec(color))
+	if ((match = matchers.hex6.exec(color)))
 		return {
 			r: parseIntFromHex(match[1]),
 			g: parseIntFromHex(match[2]),
 			b: parseIntFromHex(match[3]),
 			format: named ? "name" : "hex"
 		};
-	if (match === matchers.hex4.exec(color))
+	if ((match = matchers.hex4.exec(color)))
 		return {
 			r: parseIntFromHex(match[1] + "" + match[1]),
 			g: parseIntFromHex(match[2] + "" + match[2]),
@@ -513,7 +563,7 @@ function stringInputToObject(color) {
 			a: convertHexToDecimal(match[4] + "" + match[4]),
 			format: named ? "name" : "hex8"
 		};
-	if (match === matchers.hex3.exec(color))
+	if ((match = matchers.hex3.exec(color)))
 		return {
 			r: parseIntFromHex(match[1] + "" + match[1]),
 			g: parseIntFromHex(match[2] + "" + match[2]),
@@ -533,13 +583,14 @@ function inputToRGB(color) {
 		format = false;
 
 	if (typeof color === "string") color = stringInputToObject(color);
+
 	if (typeof color === "object") {
 		if (
 			isValidCSSUnit(color.r) &&
 			isValidCSSUnit(color.g) &&
 			isValidCSSUnit(color.b)
 		) {
-			rgb = rgbRGB(color.r, color.g, color.b);
+			rgb = rgbToRgb(color.r, color.g, color.b);
 			ok = true;
 			format =
 				String(color.r).substr(-1) === "%"
@@ -552,7 +603,7 @@ function inputToRGB(color) {
 		) {
 			s = convertToPercentage(color.s);
 			v = convertToPercentage(color.v);
-			rgb = hsvRGB(color.h, s, v);
+			rgb = hsvToRgb(color.h, s, v);
 			ok = true;
 			format = "hsv";
 		} else if (
@@ -561,7 +612,7 @@ function inputToRGB(color) {
 			isValidCSSUnit(color.y) &&
 			isValidCSSUnit(color.k)
 		) {
-			rgb = cmykRGB(color.c, color.m, color.y, color.k);
+			rgb = cmykToRgb(color.c, color.m, color.y, color.k);
 			ok = true;
 			format = "cmyk";
 		} else if (
@@ -571,7 +622,7 @@ function inputToRGB(color) {
 		) {
 			s = convertToPercentage(color.s);
 			l = convertToPercentage(color.l);
-			rgb = hslRGB(color.h, s, l);
+			rgb = hslToRgb(color.h, s, l);
 			ok = true;
 			format = "hsl";
 		}

@@ -5,6 +5,21 @@ function isOnePointZero(n) {
 		parseFloat(n) === 1
 	);
 }
+function matrix(params, mats) {
+	return mats.map((mat) =>
+		mat.reduce(
+			// (acc, value, index) => acc + params[index] * value,
+			(acc, value, index) =>
+				acc +
+				(params[index] *
+					100000000 *
+					(value * 100000000)) /
+					100000000 /
+					100000000,
+			0
+		)
+	);
+}
 function pad2(c) {
 	return c.length === 1 ? "0" + c : "" + c;
 }
@@ -23,20 +38,19 @@ function bound01(n, max) {
 	return (n % max) / parseFloat(max);
 }
 exports.bound01 = bound01;
-
 /*
 --- Conversion Functions ---
 */
 
-function rgbRGB(r, g, b) {
+exports.rgbToRgb = function (r, g, b) {
 	return {
 		r: bound01(r, 255) * 255,
 		g: bound01(g, 255) * 255,
 		b: bound01(b, 255) * 255
 	};
-}
+};
 
-function rgbHSL(r, g, b) {
+function rgbToHsl(r, g, b) {
 	r = bound01(r, 255);
 	g = bound01(g, 255);
 	b = bound01(b, 255);
@@ -50,7 +64,6 @@ function rgbHSL(r, g, b) {
 		let d = max - min;
 		s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
 		switch (max) {
-			default:
 			case r:
 				h = (g - b) / d + (g < b ? 6 : 0);
 				break;
@@ -65,7 +78,9 @@ function rgbHSL(r, g, b) {
 	}
 	return { h: h, s: s, l: l };
 }
-function hslRGB(h, s, l) {
+
+exports.rgbToHsl = rgbToHsl;
+exports.hslToRgb = function (h, s, l) {
 	let r, g, b;
 
 	h = bound01(h, 360);
@@ -91,22 +106,23 @@ function hslRGB(h, s, l) {
 	}
 
 	return { r: r * 255, g: g * 255, b: b * 255 };
-}
+};
 
-function rgbHSV(r, g, b) {
-	let r1 = r / 255,
+exports.rgbToHsv = function (r, g, b) {
+	let h1 = rgbToHsl(r, g, b),
+		r1 = r / 255,
 		g1 = g / 255,
 		b1 = b / 255,
 		max = Math.max(r1, g1, b1),
 		min = Math.min(r1, g1, b1),
+		h = h1.h,
 		s,
 		v = max,
 		d = max - min;
 	s = max === 0 ? 0 : d / max;
-
-	return { h: rgbHSL(r, g, b).h, s: s, v: v };
-}
-function hsvRGB(h, s, v) {
+	return { h: h, s: s, v: v };
+};
+exports.hsvToRgb = function (h, s, v) {
 	h = bound01(h, 360) * 6;
 	s = bound01(s, 100);
 	v = bound01(v, 100);
@@ -122,8 +138,8 @@ function hsvRGB(h, s, v) {
 		b = [p, p, t, v, v, q][mod];
 
 	return { r: r * 255, g: g * 255, b: b * 255 };
-}
-function rgbHEX(r, g, b, allow3Char) {
+};
+exports.rgbToHex = function (r, g, b, allow3Char) {
 	let hex = [
 		pad2(Math.round(r).toString(16)),
 		pad2(Math.round(g).toString(16)),
@@ -138,8 +154,8 @@ function rgbHEX(r, g, b, allow3Char) {
 		return hex[0].charAt(0) + hex[1].charAt(0) + hex[2].charAt(0);
 
 	return hex.join("");
-}
-function rgbaHEX(r, g, b, a, allow4Char) {
+};
+exports.rgbaToHex = function (r, g, b, a, allow4Char) {
 	let hex = [
 		pad2(Math.round(r).toString(16)),
 		pad2(Math.round(g).toString(16)),
@@ -160,8 +176,8 @@ function rgbaHEX(r, g, b, a, allow4Char) {
 			hex[3].charAt(0)
 		);
 	return hex.join("");
-}
-function rgbaAHEX(r, g, b, a) {
+};
+exports.rgbaToArgbHex = function (r, g, b, a) {
 	let hex = [
 		pad2(convertDecimalToHex(a)),
 		pad2(Math.round(r).toString(16)),
@@ -169,8 +185,8 @@ function rgbaAHEX(r, g, b, a) {
 		pad2(Math.round(b).toString(16))
 	];
 	return hex.join("");
-}
-function rgbCMYK(r, g, b) {
+};
+exports.rgbToCmyk = function (r, g, b) {
 	var R = r / 255,
 		G = g / 255,
 		B = b / 255,
@@ -181,25 +197,31 @@ function rgbCMYK(r, g, b) {
 		y: (1 - G - K) / (1 - K),
 		k: K
 	};
-}
-function cmykRGB(c, m, y, k) {
+};
+exports.cmykToRgb = function (c, m, y, k) {
 	return {
 		r: (1 + k) * (1 + c + k),
 		g: (1 + k) * (1 + y + k),
 		b: (1 + k) * (1 + m + k)
 	};
-}
+};
 
-module.exports = {
-	rgbCMYK,
-	rgbHEX,
-	rgbHSL,
-	rgbHSV,
-	rgbRGB,
-	rgbaHEX,
-	rgbaAHEX,
-	hslRGB,
-	hsvRGB,
-	cmykRGB,
-	bound01
+/*
+https://gist.github.com/manojpandey/f5ece715132c572c80421febebaf66ae/
+*/
+exports.rgbToXYZ = function (r, g, b) {
+	const [lr, lb, lg] = [r, g, b].map((v) =>
+		v > 4.045 ? Math.pow((v + 5.5) / 105.5, 2.4) * 100 : v / 12.92
+	);
+
+	const [X, Y, Z] = matrix(
+		[lr, lb, lg],
+		[
+			[0.4124564, 0.3575761, 0.1804375],
+			[0.2126729, 0.7151522, 0.072175],
+			[0.0193339, 0.119192, 0.9503041]
+		]
+	);
+
+	return { X: X, Y: Y, Z: Z };
 };
