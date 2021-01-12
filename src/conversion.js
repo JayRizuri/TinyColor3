@@ -36,7 +36,7 @@ function utils(type, variables = []) {
 				typeof variables[0] === "string" &&
 				variables[0].indexOf("%") !== -1
 			);
-		case "pad":
+		case "pad2":
 			return variables[0].length === 1
 				? "0" + variables[0]
 				: "" + variables[0];

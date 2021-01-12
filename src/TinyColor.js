@@ -142,9 +142,7 @@ class TinyColor {
 		};
 		this.hslString =
 			this.alpha === 1
-				? `hsl(${Math.round(
-						hsl.h * 360
-				  )}%, ${Math.round(
+				? `hsl(${Math.round(hsl.h * 360)}, ${Math.round(
 						hsl.s * 100
 				  )}%, ${Math.round(hsl.l * 100)}%)`
 				: `hsla(${Math.round(
@@ -158,9 +156,7 @@ class TinyColor {
 		this.hsv = hsv;
 		this.hsvString =
 			this.alpha === 1
-				? `hsv(${Math.round(
-						hsv.h * 100
-				  )}%, ${Math.round(
+				? `hsv(${Math.round(hsv.h * 100)}, ${Math.round(
 						hsv.s * 100
 				  )}%, ${Math.round(hsv.v * 100)}%)`
 				: `hsva(${Math.round(
