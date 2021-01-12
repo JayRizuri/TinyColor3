@@ -5,10 +5,6 @@ function isOnePointZero(n) {
 		parseFloat(n) === 1
 	);
 }
-
-function parseIntFromHex(val) {
-	return parseInt(val, 16);
-}
 function pad2(c) {
 	return c.length === 1 ? "0" + c : "" + c;
 }
@@ -17,9 +13,6 @@ function isPercentage(n) {
 }
 function convertDecimalToHex(d) {
 	return Math.round(parseFloat(d) * 255).toString(16);
-}
-function convertHexToDecimal(h) {
-	return parseIntFromHex(h) / 255;
 }
 function bound01(n, max) {
 	if (isOnePointZero(n)) n = "100%";
@@ -31,18 +24,18 @@ function bound01(n, max) {
 }
 exports.bound01 = bound01;
 /*
-  --- Conversion Functions ---
+--- Conversion Functions ---
 */
 
-exports.rgbToRgb = function (r, g, b) {
+function rgbRGB(r, g, b) {
 	return {
 		r: bound01(r, 255) * 255,
 		g: bound01(g, 255) * 255,
 		b: bound01(b, 255) * 255
 	};
-};
+}
 
-exports.rgbToHsl = function (r, g, b) {
+function rgbHSL(r, g, b) {
 	r = bound01(r, 255);
 	g = bound01(g, 255);
 	b = bound01(b, 255);
@@ -70,9 +63,8 @@ exports.rgbToHsl = function (r, g, b) {
 		h /= 6;
 	}
 	return { h: h, s: s, l: l };
-};
-
-exports.hslToRgb = function (h, s, l) {
+}
+function hslRGB(h, s, l) {
 	let r, g, b;
 
 	h = bound01(h, 360);
@@ -98,41 +90,22 @@ exports.hslToRgb = function (h, s, l) {
 	}
 
 	return { r: r * 255, g: g * 255, b: b * 255 };
-};
+}
 
-exports.rgbToHsv = function (r, g, b) {
-	r = bound01(r, 255);
-	g = bound01(g, 255);
-	b = bound01(b, 255);
-
-	let max = Math.max(r, g, b),
-		min = Math.min(r, g, b),
-		h,
+function rgbHSV(r, g, b) {
+	let r1 = r / 255,
+		g1 = g / 255,
+		b1 = b / 255,
+		max = Math.max(r1, g1, b1),
+		min = Math.min(r1, g1, b1),
 		s,
 		v = max,
 		d = max - min;
-
 	s = max === 0 ? 0 : d / max;
 
-	if (max === min) h = 0;
-	else {
-		switch (max) {
-			default:
-			case r:
-				h = (g - b) / d + (g < b ? 6 : 0);
-				break;
-			case g:
-				h = (b - r) / d + 2;
-				break;
-			case b:
-				h = (r - g) / d + 4;
-				break;
-		}
-		h /= 6;
-	}
-	return { h: h, s: s, v: v };
-};
-exports.hsvToRgb = function (h, s, v) {
+	return { h: rgbHSL(r, g, b).h, s: s, v: v };
+}
+function hsvRGB(h, s, v) {
 	h = bound01(h, 360) * 6;
 	s = bound01(s, 100);
 	v = bound01(v, 100);
@@ -148,8 +121,8 @@ exports.hsvToRgb = function (h, s, v) {
 		b = [p, p, t, v, v, q][mod];
 
 	return { r: r * 255, g: g * 255, b: b * 255 };
-};
-exports.rgbToHex = function (r, g, b, allow3Char) {
+}
+function rgbHEX(r, g, b, allow3Char) {
 	let hex = [
 		pad2(Math.round(r).toString(16)),
 		pad2(Math.round(g).toString(16)),
@@ -164,8 +137,8 @@ exports.rgbToHex = function (r, g, b, allow3Char) {
 		return hex[0].charAt(0) + hex[1].charAt(0) + hex[2].charAt(0);
 
 	return hex.join("");
-};
-exports.rgbaToHex = function (r, g, b, a, allow4Char) {
+}
+function rgbaHEX(r, g, b, a, allow4Char) {
 	let hex = [
 		pad2(Math.round(r).toString(16)),
 		pad2(Math.round(g).toString(16)),
@@ -186,8 +159,8 @@ exports.rgbaToHex = function (r, g, b, a, allow4Char) {
 			hex[3].charAt(0)
 		);
 	return hex.join("");
-};
-exports.rgbaToArgbHex = function (r, g, b, a) {
+}
+function rgbaAHEX(r, g, b, a) {
 	let hex = [
 		pad2(convertDecimalToHex(a)),
 		pad2(Math.round(r).toString(16)),
@@ -195,8 +168,8 @@ exports.rgbaToArgbHex = function (r, g, b, a) {
 		pad2(Math.round(b).toString(16))
 	];
 	return hex.join("");
-};
-exports.rgbToCmyk = function (r, g, b) {
+}
+function rgbCMYK(r, g, b) {
 	var R = r / 255,
 		G = g / 255,
 		B = b / 255,
@@ -207,11 +180,25 @@ exports.rgbToCmyk = function (r, g, b) {
 		y: (1 - G - K) / (1 - K),
 		k: K
 	};
-};
-exports.cmykToRgb = function (c, m, y, k) {
+}
+function cmykRGB(c, m, y, k) {
 	return {
 		r: (1 + k) * (1 + c + k),
 		g: (1 + k) * (1 + y + k),
 		b: (1 + k) * (1 + m + k)
 	};
+}
+
+module.exports = {
+	rgbCMYK,
+	rgbHEX,
+	rgbHSL,
+	rgbHSV,
+	rgbRGB,
+	rgbaHEX,
+	rgbaAHEX,
+	hslRGB,
+	hsvRGB,
+	cmykRGB,
+	bound01
 };
